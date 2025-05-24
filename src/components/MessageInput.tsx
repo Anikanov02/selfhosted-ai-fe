@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Box, TextField, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import { MessageControllerApi } from "../api";
 
 type Props = {
   chatId: string | null;
+  messageApi: MessageControllerApi
 };
 
-const MessageInput = ({ chatId }: Props) => {
+const MessageInput = ({ chatId, messageApi }: Props) => {
   const [prompt, setPrompt] = useState("");
 
   const handleSend = async () => {

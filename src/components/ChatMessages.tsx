@@ -7,7 +7,8 @@ import {
   FormControl,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { ChatBaseDtoModelEnum } from "../api";
+import { ChatBaseDtoModelEnum, MessageControllerApi } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 const modelLabels: Record<
   (typeof ChatBaseDtoModelEnum)[keyof typeof ChatBaseDtoModelEnum],
@@ -20,12 +21,14 @@ const modelLabels: Record<
 
 interface ChatMessagesProps {
   chatId: string;
-  initialModel: ChatBaseDtoModelEnum;
+  initialModel: ChatBaseDtoModelEnum | undefined;
+  messageApi: MessageControllerApi;
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
   chatId,
   initialModel,
+  messageApi
 }) => {
   const [selectedModel, setSelectedModel] = useState(
     initialModel

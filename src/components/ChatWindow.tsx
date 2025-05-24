@@ -2,27 +2,34 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import ChatMessages from "./ChatMessages";
 import MessageInput from "./MessageInput";
-import { ChatBaseDtoModelEnum } from "../api";
+import { ChatBaseDtoModelEnum, ChatControllerApi, ChatDto, MessageControllerApi } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 type Props = {
   chatId: string;
+  messageApi: MessageControllerApi,
+  chatApi: ChatControllerApi
 };
 
-const ChatWindow = ({ chatId }: Props) => {
-  const [model, setModel] = useState("DEEPSEEK_R1");
+const ChatWindow = ({ chatId, messageApi, chatApi }: Props) => {
+  const [selectedChat, setSelectedChat] = useState<ChatDto | null>(null);
 
   useEffect(() => {
-    if (chatId) {
-      // TODO: Fetch model for chat via GET /chats/:id/model
+    const getChat = async () => {
+      if (chatId) {
+        setSelectedChat(await chatApi.getChat({id: chatId}));
+      }
     }
+
+    getChat();
   }, [chatId]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
       <Box flex={1} overflow="auto">
-        <ChatMessages chatId={chatId} initialModel={ChatBaseDtoModelEnum.DeepseekR1} />
+        <ChatMessages chatId={chatId} initialModel={selectedChat?.model} messageApi={messageApi} />
       </Box>
-      <MessageInput chatId={chatId} />
+      <MessageInput chatId={chatId} messageApi={messageApi} />
     </Box>
   );
 };
