@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import LoginPage from "./pages/auth/LoginPage";
+import RegistrationPage from "./pages/auth/RegistrationPage";
+import MainPage from "./pages/main-page/MainPage";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AppRoutes } from "./constants/AppRoutes";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutesComponent />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+// This is now inside the AuthProvider, so useAuth works correctly
+function AppRoutesComponent() {
+  const { username, password } = useAuth();
+  const isLoggedIn = !!username && !!password;
+
+  return (
+    <Routes>
+      <Route path={AppRoutes.HOME} element={<Navigate to={isLoggedIn ? AppRoutes.HOME : AppRoutes.LOGIN} replace />} />
+      <Route path={AppRoutes.LOGIN} element={<LoginPage />} />
+      <Route path={AppRoutes.REGISTER} element={<RegistrationPage />} />
+      <Route path={AppRoutes.MAIN} element={<MainPage />} />
+    </Routes>
   );
 }
 
