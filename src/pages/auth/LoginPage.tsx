@@ -53,9 +53,9 @@ const LoginPage = () => {
           };
 
           try {
-            await api.signInRaw(request);
+            const response: any = await api.signIn(request);
             setStatus({ success: "Login successful" });
-            setCredentials(login, password);
+            setCredentials(login, password, response.id);
             navigate(AppRoutes.MAIN)
             // TODO: redirect or update app state here
           } catch (e: any) {

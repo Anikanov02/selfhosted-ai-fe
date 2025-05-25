@@ -7,8 +7,7 @@ import {
   FormControl,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { ChatBaseDtoModelEnum, MessageControllerApi } from "../api";
-import { useAuth } from "../context/AuthContext";
+import { ChatBaseDtoModelEnum, MessageDto } from "../api";
 
 const modelLabels: Record<
   (typeof ChatBaseDtoModelEnum)[keyof typeof ChatBaseDtoModelEnum],
@@ -20,24 +19,24 @@ const modelLabels: Record<
 };
 
 interface ChatMessagesProps {
-  chatId: string;
   initialModel: ChatBaseDtoModelEnum | undefined;
-  messageApi: MessageControllerApi;
+  messages: MessageDto[];
+  handleModelChange: (model: ChatBaseDtoModelEnum) => void;
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
-  chatId,
+  messages,
   initialModel,
-  messageApi
+  handleModelChange
 }) => {
   const [selectedModel, setSelectedModel] = useState(
     initialModel
   );
 
-  const handleModelChange = (event: any) => {
+  const changeModel = (event: any) => {
     const newModel = event.target.value;
     setSelectedModel(newModel);
-    // TODO: call API or state update if needed
+    handleModelChange(newModel);
   };
 
   return (
@@ -47,7 +46,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
         <Select
           labelId="model-select-label"
           value={selectedModel}
-          onChange={handleModelChange}
+          onChange={changeModel}
           IconComponent={ArrowDropDownIcon}
           sx={{ minWidth: 120 }}
         >
@@ -59,9 +58,27 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
         </Select>
       </FormControl>
 
-      {/* Chat content here */}
-      <Box mt={2}>
-        {/* TODO: Render chat messages */}
+      <Box mt={2} display="flex" flexDirection="column" gap={1}>
+        {messages.map((msg) => (
+          <Box
+            key={msg.id}
+            display="flex"
+            justifyContent={msg.userMessage ? "flex-end" : "flex-start"}
+          >
+            <Box
+              sx={{
+                bgcolor: msg.userMessage ? "#DCF8C6" : "#E0E0E0",
+                px: 2,
+                py: 1,
+                borderRadius: 2,
+                maxWidth: "70%",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {msg.text}
+            </Box>
+          </Box>
+        ))}
       </Box>
     </Box>
   );

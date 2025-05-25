@@ -1,24 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, TextField, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import { MessageControllerApi } from "../api";
 
 type Props = {
-  chatId: string | null;
-  messageApi: MessageControllerApi
+  handleSend: (prompt: string) => void;
 };
 
-const MessageInput = ({ chatId, messageApi }: Props) => {
+const MessageInput = ({ handleSend }: Props) => {
   const [prompt, setPrompt] = useState("");
-
-  const handleSend = async () => {
-    if (!chatId || !prompt.trim()) return;
-
-    // TODO: Call POST /chats/:chatId/messages with { content: prompt }
-    console.log("Sending message to chat:", chatId, prompt);
-
-    setPrompt("");
-  };
 
   return (
     <Box display="flex" p={2} borderTop="1px solid #eee">
@@ -32,11 +21,12 @@ const MessageInput = ({ chatId, messageApi }: Props) => {
         onKeyDown={(e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            handleSend();
+            handleSend(prompt);
+            setPrompt("");
           }
         }}
       />
-      <IconButton color="primary" onClick={handleSend} disabled={!prompt.trim()}>
+      <IconButton color="primary" onClick={() => handleSend(prompt)} disabled={!prompt.trim()}>
         <SendIcon />
       </IconButton>
     </Box>

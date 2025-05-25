@@ -66,9 +66,9 @@ const RegisterPage = () => {
           };
 
           try {
-            await api.signup(request);
+            const response: any = await api.signup(request);
             setStatus({ success: "Registration successful" });
-            setCredentials(email, password);
+            setCredentials(email, password, response.id);
             navigate(AppRoutes.MAIN)
             // TODO: redirect or update app state here
           } catch (e: any) {

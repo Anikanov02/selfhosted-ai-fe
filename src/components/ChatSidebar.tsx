@@ -1,7 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Box, List, ListItemButton, Typography } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
-import { ChatBaseDto, ChatControllerApi, ChatDto, PageChatDto } from "../api";
+import { useEffect, useState } from "react";
+import {
+  Box,
+  List,
+  ListItemButton,
+  Typography,
+  IconButton,
+  Stack,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { ChatControllerApi, ChatDto, ChatDtoModelEnum, PagedModel } from "../api";
 
 type Props = {
   selectedChatId: string | undefined;
@@ -9,27 +16,50 @@ type Props = {
   chatApi: ChatControllerApi;
 };
 
+// TODO: handle pages
 const ChatSidebar = ({ selectedChatId, onSelectChat, chatApi }: Props) => {
-  const [chats, setChats] = useState<PageChatDto | null>(null);
+  const [chats, setChats] = useState<PagedModel>();
+  const [page, setPage] = useState<number>(0);
+
+  const getChats = async () => {
+    const response = await chatApi.getChats({ page, size: 100 });
+    setChats(response);
+  };
+
+  const createChat = async () => {
+    await chatApi.createChat({
+      chatBaseDto: {
+        title: "New Chat",
+        model: ChatDtoModelEnum.DeepseekCoder,
+      },
+    });
+    getChats();
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await chatApi.getChats({
-        request: { page: 1, size: 100, userId: 'id' },
-      })
-      setChats(response);
-    }
-
-    fetchData();
-  }, [])
+    getChats();
+  }, []);
 
   return (
     <Box p={2}>
-      <Typography variant="h6" gutterBottom>
-        Chats
-      </Typography>
+      {/* Header with title and + button */}
+      <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Typography variant="h6" gutterBottom>
+          Chats
+        </Typography>
+        <IconButton
+          aria-label="add chat"
+          size="small"
+          onClick={createChat}
+          sx={{ mt: -1 }}
+        >
+          <AddIcon fontSize="small" />
+        </IconButton>
+      </Stack>
+
+      {/* List of chats */}
       <List>
-        {chats && chats.content && chats.content.map((chat) => (
+        {(chats?.content as ChatDto[] | undefined)?.map((chat) => (
           <ListItemButton
             key={chat.id}
             selected={selectedChatId === chat.id}
