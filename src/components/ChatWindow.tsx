@@ -18,9 +18,15 @@ const ChatWindow = ({ chatId, messageApi, chatApi }: Props) => {
   const [isAiTyping, setIsAiTyping] = useState(false);
 
   const fetchMessages = async () => {
-    const response = (await messageApi.getMessages({page, size: 100, chatId})).content;
+    const response = (await messageApi.getMessages({ page, size: 100, chatId })).content;
     if (response) {
       setMessages(response as MessageDto[]);
+    }
+  }
+
+  const getChat = async () => {
+    if (chatId) {
+      setSelectedChat(await chatApi.getChat({ id: chatId }));
     }
   }
 
@@ -34,35 +40,30 @@ const ChatWindow = ({ chatId, messageApi, chatApi }: Props) => {
     setIsAiTyping(false);
   };
 
-  const handleModelChange = (model: ChatBaseDtoModelEnum) => {
+  const handleModelChange = async (model: ChatBaseDtoModelEnum) => {
     const { id, ...chatWithoutId } = selectedChat as ChatDto;
 
-    chatApi.updateChat({
+    await chatApi.updateChat({
       id: chatId,
       chatBaseDto: {
         ...chatWithoutId,
         model,
       },
     });
+    await getChat();
   }
 
   useEffect(() => {
-    const getChat = async () => {
-      if (chatId) {
-        setSelectedChat(await chatApi.getChat({ id: chatId }));
-      }
-    }
-
     getChat();
     fetchMessages();
   }, [chatId]);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
-      <Box flex={1} overflow="auto">
-        <ChatMessages messages={messages} handleModelChange={handleModelChange} initialModel={selectedChat?.model} isAiTyping={isAiTyping} />
+      <Box flex={1} overflow="hidden">
+        <ChatMessages messages={messages} isAiTyping={isAiTyping} />
       </Box>
-      <MessageInput handleSend={handleSend} />
+      <MessageInput handleSend={handleSend} handleModelChange={handleModelChange} selectedChat={selectedChat} />
     </Box>
   );
 };

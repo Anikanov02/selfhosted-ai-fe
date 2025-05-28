@@ -8,6 +8,7 @@ import {
   Stack,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ChatControllerApi, ChatDto, ChatDtoModelEnum, PagedModel } from "../api";
 
 type Props = {
@@ -36,13 +37,18 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, chatApi }: Props) => {
     getChats();
   };
 
+  const deleteChat = async (id: string) => {
+    await chatApi.deleteChat({ id });
+
+    getChats();
+  }
+
   useEffect(() => {
     getChats();
   }, []);
 
   return (
     <Box p={2}>
-      {/* Header with title and + button */}
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Typography variant="h6" gutterBottom>
           Chats
@@ -57,16 +63,39 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, chatApi }: Props) => {
         </IconButton>
       </Stack>
 
-      {/* List of chats */}
       <List>
         {(chats?.content as ChatDto[] | undefined)?.map((chat) => (
-          <ListItemButton
+          <Box
             key={chat.id}
-            selected={selectedChatId === chat.id}
-            onClick={() => onSelectChat(chat.id)}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              "&:hover .delete-button": {
+                opacity: 1,
+              },
+            }}
           >
-            {chat.title}
-          </ListItemButton>
+            <ListItemButton
+              selected={selectedChatId === chat.id}
+              onClick={() => onSelectChat(chat.id)}
+              sx={{ flex: 1 }}
+            >
+              {chat.title}
+            </ListItemButton>
+            <IconButton
+              className="delete-button"
+              size="small"
+              onClick={() => deleteChat(chat.id!)}
+              sx={{
+                ml: 1,
+                opacity: 0,
+                transition: "opacity 0.2s ease-in-out",
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Box>
         ))}
       </List>
     </Box>
