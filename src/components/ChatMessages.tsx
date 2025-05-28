@@ -9,6 +9,7 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { ChatBaseDtoModelEnum, MessageDto } from "../api";
 
+//TODO move it to where enum is
 const modelLabels: Record<
   (typeof ChatBaseDtoModelEnum)[keyof typeof ChatBaseDtoModelEnum],
   string
@@ -22,12 +23,14 @@ interface ChatMessagesProps {
   initialModel: ChatBaseDtoModelEnum | undefined;
   messages: MessageDto[];
   handleModelChange: (model: ChatBaseDtoModelEnum) => void;
+  isAiTyping: boolean
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   initialModel,
-  handleModelChange
+  handleModelChange,
+  isAiTyping
 }) => {
   const [selectedModel, setSelectedModel] = useState(
     initialModel
@@ -79,7 +82,64 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
             </Box>
           </Box>
         ))}
+
+        {isAiTyping && (
+          <Box display="flex" justifyContent="flex-start">
+            <Box
+              sx={{
+                bgcolor: "#E0E0E0",
+                px: 2,
+                py: 1,
+                borderRadius: 2,
+                maxWidth: "70%",
+                display: "inline-flex",
+                gap: "4px",
+              }}
+            >
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  bgcolor: "#888",
+                  borderRadius: "50%",
+                  animation: "bounce 1s infinite ease-in-out",
+                  animationDelay: "0s",
+                }}
+              />
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  bgcolor: "#888",
+                  borderRadius: "50%",
+                  animation: "bounce 1s infinite ease-in-out",
+                  animationDelay: "0.2s",
+                }}
+              />
+              <Box
+                sx={{
+                  width: 8,
+                  height: 8,
+                  bgcolor: "#888",
+                  borderRadius: "50%",
+                  animation: "bounce 1s infinite ease-in-out",
+                  animationDelay: "0.4s",
+                }}
+              />
+            </Box>
+          </Box>
+        )}
       </Box>
+
+      {/* Keyframes injected via global style //TODO move to styles */}
+      <style>
+        {`
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.3; }
+            40% { transform: scale(1.2); opacity: 1; }
+          }
+        `}
+      </style>
     </Box>
   );
 };

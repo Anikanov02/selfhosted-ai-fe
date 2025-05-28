@@ -4,3 +4,5 @@ TODO:
 - error handling 
 - blank home page if not logged in, should redirect to login 
 - error mesage toast 
+- awaiting response animation 
+- changing chat name
